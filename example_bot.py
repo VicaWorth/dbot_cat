@@ -2,50 +2,6 @@ import nextcord
 import random
 from nextcord.ext import commands
 import logging
-import pandas as pd
-import math 
-import numpy as np 
-
-class Cat:
-    def __init__(self, sex, name):
-        self.id = math.randInt()
-        self.sex = sex
-        self.name = name
-
-    def __str__(self):
-        return f"{self.name}"
-    
-    """
-    LocusO
-    This Locus determines the production of orange/red in the fur.
-    X-Chromosome dependent
-    Set o2 to NULL if the at is male
-
-    LocusB
-    This locus determins the brown gene. There are three of them:
-    B/- -> b/b -> b1/b1
-
-    LocusD the dilution gene -> d/d
-    """
-    def create_genetics(self, o1, o2, b1, b2, d1, d2):
-        self.genes = pd.DataFrame(np.array([[o1, o2], 
-                                            [b1, b2], 
-                                            [d1, d2]]),
-                                columns=['LocusO', 'LocusB', 'LocusD'])
-    
-    def show_genes(self):
-        print(self.genes)
-
-    def phenotype():
-        # Determines what will be expressed
-        #self.genes
-
-        """
-        class LocusO:
-            def __init__(self, x1, x2):
-            self.allele_x1 = x1
-            self.allele_x2 = x2
-        """
             
 logging.basicConfig(level=logging.INFO)
 
@@ -72,11 +28,15 @@ async def roll(ctx, dice: str):
     await ctx.send(result)
 
 
+@bot.slash_command(description="Richard says 'Hello!'")
+async def hello(ctx, member: nextcord.Member):
+    """Chooses between multiple choices."""
+    await ctx.send(f"Hello {member.name}!")
+
 @bot.slash_command(description="For when you wanna settle the score some other way")
 async def choose(ctx, *choices: str):
     """Chooses between multiple choices."""
     await ctx.send(random.choice(choices))
-
 
 @bot.slash_command()
 async def repeat(ctx, times: int, content="repeating..."):

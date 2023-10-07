@@ -2,14 +2,20 @@ import pandas as pd
 import random 
 import numpy as np 
 
-lookupColor = pd.DataFrame([
-                            ['O', 'Orange'],
-                            ['B', 'Black'],
-                            ['b', 'Chocolate'],
-                            ['b1', 'Cinnamon']
-                           ],
-                           columns=['Allele', 'Color from Allele']
-                           )
+
+lookupColor = {
+            # Locus O
+                'O': 'Orange',
+                'B': 'Black',
+            # Locus B
+                'b': 'Chocolate',
+                'b1': 'Cinnamon',
+            # Locus D 
+                'Od': 'Cream',
+                'Bd': 'Blue',
+                'bd': 'Lilac',
+                'b1d': 'Fawn'
+              }
 
 class Cat:
     def __init__(self, sex, name):
@@ -43,8 +49,15 @@ class Cat:
                                 columns=['Locus','Dominant', 'Recessive'])
     
     def show_genes(self):
-        print("Genetic Code")
+        print("--=-- Genetic Code --=--")
         print(self.genes)
+
+    """
+    The breeding profile could be used to compare two cats genes
+    and their types of offspring.
+    """
+    def show_breeding_profile(self, cat2):
+        print("-0-0-0- Breeding Profile -0-0-0- ")
 
     """
     Will calculate the cat's phenotype based off of its genes
@@ -61,7 +74,7 @@ class Cat:
             A2 = self.genes.iat[0, 2]
             print(A2)
             if (A1 == A2):
-                baseColor = lookupColor.lookup(['O'])
+                baseColor = lookupColor[A1]
             else:
                 baseColor = ["Orange", "Black"]
                 tortie = True
@@ -72,6 +85,11 @@ class Cat:
         print(baseColor, tortie)
 
 mycat = Cat('F', 'Snuggles')
+"""
+LocusO - Orange or Black
+LocusB - Chocolate/Cinnamon
+LocusD - Dilution or Not
+"""
 mycat.create_genetics('B','B',
                       'b','b1',
                       'D','d')
