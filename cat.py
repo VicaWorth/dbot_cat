@@ -2,16 +2,15 @@ import pandas as pd
 import random 
 import numpy as np 
 
-
 lookupColor = {
-            # Locus O
+            # Locus O (Orange)
                 'O': 'Orange',
                 'o': 'Not Orange',
-            # Locus B
+            # Locus B (Brown)
                 'B': 'Black',
                 'b': 'Chocolate',
                 'b1':'Cinnamon',
-            # Locus D
+            # Locus D (Dilution)
                 'D': 'Not Diluted',
                 'd': 'Diluted',
 
@@ -20,6 +19,17 @@ lookupColor = {
                 'Bd': 'Blue',  # diluted black
                 'bd': 'Lilac', # diluted chocolate
                 'b1d': 'Fawn',  # diluted cinnamon
+            # Locus A (Agouti)
+                'A': 'Tabby', # Cat will have stripes
+                'a': 'Solid', # The cat will be solid
+            # Locus S (White Spots)
+                'Ws': 'Large White Splotches',
+                'ws': 'Small White Splotches',
+            # Locus C (Color point or Siamese)
+                'C': 'No Colorpoint',
+                'cb': 'Burmese', # cb and cs are incomplete dominance. So together the create a tonkinese
+                'cs': 'Siamese',
+                'c': 'Albino',
             # No gene
                 'x': 'None',
             # Unknown Gene
@@ -148,7 +158,7 @@ LocusB - Chocolate/Cinnamon
 LocusD - Dilution or Not
 """
 mycat.create_genetics('O', 'o',
-                      'b','b1',
+                      'b1','b1',
                       'd','d')
 mycat.show_genes(True, True)
 mycat.phenotype()
