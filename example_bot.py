@@ -2,6 +2,7 @@ import nextcord
 import random
 from nextcord.ext import commands
 import logging
+import cat
             
 logging.basicConfig(level=logging.INFO)
 

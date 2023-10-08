@@ -10,11 +10,13 @@ lookupColor = {
             # Locus B
                 'B': 'Black',
                 'b': 'Chocolate',
-                'b1': 'Cinnamon',
+                'b1':'Cinnamon',
             # Locus D
                 'D': 'Not Diluted',
                 'd': 'Diluted',
+
                 'Od': 'Cream', # diluted orange
+
                 'Bd': 'Blue',  # diluted black
                 'bd': 'Lilac', # diluted chocolate
                 'b1d': 'Fawn',  # diluted cinnamon
@@ -37,7 +39,6 @@ class Cat:
     """
     LocusO
     This Locus determines the production of orange/red in the fur.
-    The first slot will contain Black for females
     X-Chromosome dependent
     Set o2 to NULL if the at is male
 
@@ -59,6 +60,7 @@ class Cat:
                                 })
         
         # Creates "phenotype" version of the genes
+        # MAKE TOP ROW DOMINANT GENE 
         self.genes2 = self.genes.copy()
         for col in list(self.genes2):
             self.genes2[col][0] = lookupColor[self.genes2[col][0]]
@@ -145,8 +147,8 @@ LocusO - Orange or Black
 LocusB - Chocolate/Cinnamon
 LocusD - Dilution or Not
 """
-mycat.create_genetics('o', 'o',
+mycat.create_genetics('O', 'o',
                       'b','b1',
-                      'D','d')
+                      'd','d')
 mycat.show_genes(True, True)
 mycat.phenotype()
