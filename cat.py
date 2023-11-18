@@ -22,9 +22,11 @@ lookupColor = {
             # Locus A (Agouti)
                 'A': 'Tabby', # Cat will have stripes
                 'a': 'Solid', # The cat will be solid
+			# Locus DW (Dominant white which 75% of the time causes deafness)
+			#	'DW': 'Dominant White',
             # Locus S (White Spots)
-                'Ws': 'Large White Splotches',
-                'ws': 'Small White Splotches',
+                'N': 'Normal (no white)',
+                'WS': 'White spotting',
             # Locus C (Color point or Siamese)
                 'C': 'No Colorpoint',
                 'cb': 'Burmese', # cb and cs are incomplete dominance. So together the create a tonkinese
@@ -148,7 +150,8 @@ class Cat:
             print("Your cat is a tortoiseshell, a", 
                   baseColor[0], "and", baseColor[1],
                   ".")
-        else:
+        # The cat is male
+		else:
             print("Your cat is a", baseColor[0])
 
 mycat = Cat('F', 'Snuggles')
