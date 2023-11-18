@@ -38,6 +38,7 @@ lookupColor = {
 
 class Cat:
     def __init__(self, sex, name):
+        # this right now gets rid of trailling zeros
         self.id = random.randint(1,1_000_000)
         self.sex = sex
         self.name = name
@@ -47,26 +48,53 @@ class Cat:
         return f"{self.name}"
     
     """
-    LocusO
-    This Locus determines the production of orange/red in the fur.
+    LocusO = orange gene
     X-Chromosome dependent
-    Set o2 to NULL if the at is male
+    O/O   - Orange
+    O/x   - Male Orange
 
-    LocusB
-    This locus determins the brown gene. There are three of them:
-    B/- -> b/b -> b1/b1
+    LocusB = black/brown gene
+    B/-   - Black 
+    b/b   - Brown
+    b1/b1 - Cinnamon
 
-    LocusD the dilution gene
-    D/D no dilution
-    d/d yes dilution
-    d1/d1 yes double dilution
+    LocusD = dilution gene
+    D/D   - No Dilution
+    d/d   - Dilution
+    d1/d1 - Double Dilution
+
+    LocusA = stripes/tabby gene
+    A/-   - Stripes
+    a/a   - No Stripes
+
+    LocusS = white spots gene
+    Ws/-  - Large white spots
+    ws/-  - Little or no white spots
+    x/x   - No white spotting 
+
+    LocusC = color point gene
+    C/-   - No colorpoint
+    cb/-  - Burmese
+    cb/cs - Tonkinese
+    cs/-  - Siamese
+    c/c   - Albino
     """
-    def create_genetics(self, o1, o2, b1, b2, d1, d2):
+    # At some point replace this var input with an array or something :eyeroll:
+    def create_genetics(self, o1, o2, 
+                        b1, b2, 
+                        d1, d2,
+                        a1, a2,
+                        s1, s2,
+                        c1, c2
+                        ):
         #                         0        1   2
         self.genes = pd.DataFrame({
-                                'LocusO': [o1, o2], 
-                                'LocusB': [b1, b2], 
-                                'LocusD': [d1, d2]
+                                'LocusO': [o1, o2], # Orange
+                                'LocusB': [b1, b2], # Black/Brown
+                                'LocusD': [d1, d2], # Dilution
+                                'LocusA': [a1, a2],
+                                'LocusS': [s1, s2],
+                                'LocusC': [c1, c2]
                                 })
         
         # Creates "phenotype" version of the genes
@@ -112,22 +140,27 @@ class Cat:
         O1 = self.genes.iat[0, 0]
         O2 = self.genes.iat[1, 0]
         B1 = self.genes.iat[0, 1]
-        B2 = self.genes.iat[1, 1]
+        # B2 = self.genes.iat[1, 1]
         D1 = self.genes.iat[0, 2]
         D2 = self.genes.iat[1, 2]
+        A1 = self.genes.iat[0, 3]
+        A2 = self.genes.iat[1, 3]
+        S1 = self.genes.iat[0, 4]
+        S2 = self.genes.iat[1, 4]
+        C1 = self.genes.iat[0, 5]
+        C2 = self.genes.iat[1, 5]
 
         baseColor = [lookupColor[O1], '']
         tortie = False
 
-        if True:
-            # Checks if black exists
-            if O1 != 'O':
-                baseColor[0] = lookupColor[B1]
-                
-            if O1 != 'O' and D1 == 'd' and D2 == 'd':
-                baseColor[0] = lookupColor[B1+'d']
-            elif O1 == 'O' and D1 == 'd' and D2 == 'd':
-                baseColor[0] = lookupColor[O1+'d']
+        # Checks if black exists
+        if O1 != 'O':
+            baseColor[0] = lookupColor[B1]
+            
+        if O1 != 'O' and D1 == 'd' and D2 == 'd':
+            baseColor[0] = lookupColor[B1+'d']
+        elif O1 == 'O' and D1 == 'd' and D2 == 'd':
+            baseColor[0] = lookupColor[O1+'d']
 
         # Used for finding Torties
         if self.sex == 'F':
@@ -146,8 +179,7 @@ class Cat:
         
         if tortie == True:
             print("Your cat is a tortoiseshell, a", 
-                  baseColor[0], "and", baseColor[1],
-                  ".")
+                  baseColor[0], "and", baseColor[1])
         else:
             print("Your cat is a", baseColor[0])
 
@@ -156,9 +188,16 @@ mycat = Cat('F', 'Snuggles')
 LocusO - Orange or Black
 LocusB - Chocolate/Cinnamon
 LocusD - Dilution or Not
+LocusA - Stripes/Tabby gene
+LocusS - White Spots gene
+LocusC - color point gene
 """
 mycat.create_genetics('O', 'o',
                       'b1','b1',
-                      'd','d')
+                      'd','d',
+                      'A','a',
+                      'Ws','x',
+                      'C','C'
+                      )
 mycat.show_genes(True, True)
 mycat.phenotype()
