@@ -1,6 +1,9 @@
 import pandas as pd
 import random 
 import numpy as np 
+import math
+from datetime import datetime
+random.seed(200)
 
 lookupColor = {
             # Locus O (Orange)
@@ -14,19 +17,20 @@ lookupColor = {
                 'D': 'Not Diluted',
                 'd': 'Diluted',
 
-                'Od': 'Cream', # diluted orange
+                'Od': 'Cream',  # diluted orange
 
-                'Bd': 'Blue',  # diluted black
-                'bd': 'Lilac', # diluted chocolate
+                'Bd': 'Blue',   # diluted black
+                'bd': 'Lilac',  # diluted chocolate
                 'b1d': 'Fawn',  # diluted cinnamon
             # Locus A (Agouti)
-                'A': 'Tabby', # Cat will have stripes
-                'a': 'Solid', # The cat will be solid
+                'MC': 'Mackerel', # Cat will have verticle stripes
+                'mc': 'Classic',  # Cat will have marbled stripes
+                'a': 'Solid',     # The cat will be solid
 			# Locus DW (Dominant white which 75% of the time causes deafness)
 			#	'DW': 'Dominant White',
             # Locus S (White Spots)
-                'N': 'Normal (no white)',
-                'WS': 'White spotting',
+                'Ws': 'Large',
+                'ws': 'Small',
             # Locus C (Color point or Siamese)
                 'C': 'No Colorpoint',
                 'cb': 'Burmese', # cb and cs are incomplete dominance. So together the create a tonkinese
@@ -39,11 +43,48 @@ lookupColor = {
               }
 
 class Cat:
-    def __init__(self, sex, name):
+    def __init__(self, sex, name, randomGen):
         # this right now gets rid of trailling zeros
+        # NOTE random generator is not seeded and seeds are apparently
+        # depreciated
         self.id = random.randint(1,1_000_000)
         self.sex = sex
         self.name = name
+
+        #                         0        1   2
+        self.genes = pd.DataFrame({
+                                'LocusO': [0, 1], # Orange
+                                'LocusB': [2, 3], # Black/Brown
+                                'LocusD': [4, 5], # Dilution
+                                'LocusA': [6, 7],
+                                'LocusS': [8, 9],
+                                'LocusC': [10, 11]
+                                })
+        # randomGen will create a randomly generated cat.
+        if randomGen == True:
+            # This tuple holds the number of options per allele
+            # These are the locusts
+            #             O B D A S C
+            allChoices = (('O','o'),
+                          ('B','b','b1'),
+                          ('D','d'),
+                          ('MC','mc','a'),
+                          ('Ws','ws'),
+                          ('C','cb','cs','c'))
+            genesHolder = []
+            for i in range((len(allChoices))):
+                r1 = random.randint(0, len(allChoices[i])-1)
+                r2 = random.randint(0, len(allChoices[i])-1)
+                # print(allChoices[i], allChoices[i][r1], allChoices[i][r2])
+                if r1 < r2:
+                    genesHolder.append(allChoices[i][r1])
+                    genesHolder.append(allChoices[i][r2])
+                else:
+                    genesHolder.append(allChoices[i][r2])
+                    genesHolder.append(allChoices[i][r1])
+            self.create_genetics(genesHolder)
+                
+                    
 
     # This code is run whenever we do stuff like print(mycat)
     def __str__(self):
@@ -82,30 +123,23 @@ class Cat:
     c/c   - Albino
     """
     # At some point replace this var input with an array or something :eyeroll:
-    def create_genetics(self, o1, o2, 
-                        b1, b2, 
-                        d1, d2,
-                        a1, a2,
-                        s1, s2,
-                        c1, c2
-                        ):
-        #                         0        1   2
-        self.genes = pd.DataFrame({
-                                'LocusO': [o1, o2], # Orange
-                                'LocusB': [b1, b2], # Black/Brown
-                                'LocusD': [d1, d2], # Dilution
-                                'LocusA': [a1, a2],
-                                'LocusS': [s1, s2],
-                                'LocusC': [c1, c2]
-                                })
+    def create_genetics(self, newGenes):
+
+        # print(self.genes)
+        for i in range(0,11):
+            index = math.ceil((i/2))
+            
+            self.genes.iat[0, index] = newGenes[i]
+            self.genes.iat[1, index] = newGenes[i+1]
         
         # Creates "phenotype" version of the genes
         # MAKE TOP ROW DOMINANT GENE 
+        
         self.genes2 = self.genes.copy()
         for col in list(self.genes2):
             self.genes2[col][0] = lookupColor[self.genes2[col][0]]
             self.genes2[col][1] = lookupColor[self.genes2[col][1]]
-            #self.genes2.at[index, row] = lookupColor[self.genes2.at[index, row]]
+            # self.genes2.at[index, row] = lookupColor[self.genes2.at[index, row]]
     
     """
     Prints the genetics of a cat in a table,
@@ -146,14 +180,22 @@ class Cat:
         D1 = self.genes.iat[0, 2]
         D2 = self.genes.iat[1, 2]
         A1 = self.genes.iat[0, 3]
-        A2 = self.genes.iat[1, 3]
+        # A2 = self.genes.iat[1, 3]
         S1 = self.genes.iat[0, 4]
-        S2 = self.genes.iat[1, 4]
+        # S2 = self.genes.iat[1, 4]
         C1 = self.genes.iat[0, 5]
         C2 = self.genes.iat[1, 5]
 
         baseColor = [lookupColor[O1], '']
         tortie = False
+        # Tabby & Whiteness 
+        tabby = lookupColor[A1]
+        whitespotting = lookupColor[S1]
+       
+        # Colorpoint calculations
+        colorpoint = lookupColor[C1]
+        if C1 == 'cb' and C2 == 'cw':
+            colorpoint = 'Tonkinese'
 
         # Checks if black exists
         if O1 != 'O':
@@ -180,13 +222,11 @@ class Cat:
             print("Cat's sex cannot be determined.")
         
         if tortie == True:
-            print("Your cat is a tortoiseshell, a", 
-                  baseColor[0], "and", baseColor[1],
-                  ".")
+            print(f"Your cat is a {colorpoint} {tabby} (stripes) Tortoiseshell, colored {baseColor[0]} and {baseColor[1]} with {whitespotting} White Spots.")
         else:
-            print("Your cat is a", baseColor[0])
+            print(f"Your cat is a {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
 
-mycat = Cat('F', 'Snuggles')
+mycat = Cat('F', 'Snuggles', True)
 """
 LocusO - Orange or Black
 LocusB - Chocolate/Cinnamon
@@ -195,12 +235,13 @@ LocusA - Stripes/Tabby gene
 LocusS - White Spots gene
 LocusC - color point gene
 """
-mycat.create_genetics('O', 'o',
-                      'b1','b1',
-                      'd','d',
-                      'A','a',
-                      'Ws','x',
-                      'C','C'
-                      )
+# myGenes = ['O', 'O',
+#         'b1','b1',
+#         'd','d',
+#         'MC','mc',
+#         'Ws','x',
+#         'C','C']
+# mycat.create_genetics(myGenes)
 mycat.show_genes(True, True)
 mycat.phenotype()
+
