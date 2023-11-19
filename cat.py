@@ -3,7 +3,7 @@ import random
 import numpy as np 
 import math
 from datetime import datetime
-random.seed(200)
+random.seed(datetime.now().timestamp())
 
 lookupColor = {
             # Locus O (Orange)
@@ -61,6 +61,7 @@ class Cat:
                                 'LocusC': [10, 11]
                                 })
         # randomGen will create a randomly generated cat.
+        # NOTE RIGHT NOW ITS NOT LOOKING AT CAT'S GENDER
         if randomGen == True:
             # This tuple holds the number of options per allele
             # These are the locusts
@@ -135,11 +136,11 @@ class Cat:
         # Creates "phenotype" version of the genes
         # MAKE TOP ROW DOMINANT GENE 
         
-        self.genes2 = self.genes.copy()
-        for col in list(self.genes2):
-            self.genes2[col][0] = lookupColor[self.genes2[col][0]]
-            self.genes2[col][1] = lookupColor[self.genes2[col][1]]
-            # self.genes2.at[index, row] = lookupColor[self.genes2.at[index, row]]
+        self.genesPheno = self.genes.copy()
+        for col in list(self.genesPheno):
+            self.genesPheno[col][0] = lookupColor[self.genesPheno[col][0]]
+            self.genesPheno[col][1] = lookupColor[self.genesPheno[col][1]]
+            # self.genesPheno.at[index, row] = lookupColor[self.genesPheno.at[index, row]]
     
     """
     Prints the genetics of a cat in a table,
@@ -152,7 +153,7 @@ class Cat:
             print(self.genes, "\n")
         if (nonAlleles):
             print("--=-- Genetic (Non Alleles) --=--")
-            print(self.genes2,"\n")
+            print(self.genesPheno,"\n")
 
     """
     The breeding profile could be used to compare two cats genes
@@ -173,6 +174,7 @@ class Cat:
     For simplicity, Orange always appears before Not Orange.
     """
     def phenotype(self):
+        message = "Something went wrong."
         O1 = self.genes.iat[0, 0]
         O2 = self.genes.iat[1, 0]
         B1 = self.genes.iat[0, 1]
@@ -219,14 +221,16 @@ class Cat:
                     baseColor[1] = lookupColor[B1]
 
         elif self.sex != 'M':
-            print("Cat's sex cannot be determined.")
+            message = ("Cat's sex cannot be determined.")
         
         if tortie == True:
-            print(f"Your cat is a {colorpoint} {tabby} (stripes) Tortoiseshell, colored {baseColor[0]} and {baseColor[1]} with {whitespotting} White Spots.")
+            message = (f"Your cat is a {colorpoint} {tabby} (stripes) Tortoiseshell, colored {baseColor[0]} and {baseColor[1]} with {whitespotting} White Spots.")
         else:
-            print(f"Your cat is a {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
+            message = (f"Your cat is a {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
+        print(message)
+        return message
 
-mycat = Cat('F', 'Snuggles', True)
+# mycat = Cat('F', 'Snuggles', True)
 """
 LocusO - Orange or Black
 LocusB - Chocolate/Cinnamon
@@ -242,6 +246,6 @@ LocusC - color point gene
 #         'Ws','x',
 #         'C','C']
 # mycat.create_genetics(myGenes)
-mycat.show_genes(True, True)
-mycat.phenotype()
+# mycat.show_genes(True, True)
+# mycat.phenotype()
 
