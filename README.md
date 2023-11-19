@@ -10,7 +10,7 @@ Step 2:
 - Save cat data to SQL database
 
 ## Cat Genes
-- Add stripes
-- Add white spots gene
-- Add eye colors (Maybe)
-- Maybe add color point gene
+- X Add stripes
+- X Add white spots gene
+- X Add eye colors (Maybe) <-- polygenes make this impossible unless we wanna do some kind of statistics
+- X Maybe add color point gene
