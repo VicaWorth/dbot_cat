@@ -15,8 +15,9 @@ bot = commands.Bot(command_prefix='>', intents=intents)
 @bot.command()
 async def generateCat(ctx):
     newCat = Cat('F', 'snuggles', True)
-    message = newCat.phenotype()
-    await ctx.send(f"{message}")
+    message1 = newCat.phenotype()
+    message2 = newCat.show_genes(True, True)
+    await ctx.reply(f"{message1}\n{message2}")
 
 bot.run('MTE1MzE0Nzg4MzAxMzU1ODM1Mg.GYFXfO.3FpcxkehsWuI27hyEJZMmTJk6Bd_7i36f1Kods')
 

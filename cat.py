@@ -148,12 +148,14 @@ class Cat:
     otherwise it will print the gene expression (like orange/black)
     """
     def show_genes(self, alleles, nonAlleles):
+        message = ""
         if (alleles):
-            print("--=-- Genetic (Alleles) --=--")
-            print(self.genes, "\n")
+            message += "--=-- Genetic (Alleles) --=--\n"
+            message += self.genes.to_string() + "\n\n"
         if (nonAlleles):
-            print("--=-- Genetic (Non Alleles) --=--")
-            print(self.genesPheno,"\n")
+            message += "--=-- Genetic (Non Alleles) --=--\n"
+            message += self.genesPheno.to_string()+ "\n\n"
+        return message
 
     """
     The breeding profile could be used to compare two cats genes
