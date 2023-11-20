@@ -1,9 +1,17 @@
 import pandas as pd
 import random 
-import numpy as np 
+# import numpy as np 
 import math
 from datetime import datetime
+from tabulate import tabulate
 random.seed(datetime.now().timestamp())
+
+
+# This stops rows and coulmns from being cutoff
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_colwidth', None)
+# pd.set_option('display.max_rowwidth', None)
 
 lookupColor = {
             # Locus O (Orange)
@@ -71,25 +79,26 @@ class Cat:
                           ('D','d'),
                           ('MC','mc','a'),
                           ('Ws','ws'),
-                          ('C','cb','cs','c'))
+                          ('C','cb','cs','c'),
+                          ('x'))
             genesHolder = []
-            for i in range((len(allChoices))):
+            for i in range((len(allChoices))-1):
                 r1 = random.randint(0, len(allChoices[i])-1)
                 r2 = random.randint(0, len(allChoices[i])-1)
-                # print(allChoices[i], allChoices[i][r1], allChoices[i][r2])
                 if r1 < r2:
                     genesHolder.append(allChoices[i][r1])
                     genesHolder.append(allChoices[i][r2])
                 else:
                     genesHolder.append(allChoices[i][r2])
                     genesHolder.append(allChoices[i][r1])
+            # Male cat cannot have second O gene.
             self.create_genetics(genesHolder)
                 
                     
 
     # This code is run whenever we do stuff like print(mycat)
     def __str__(self):
-        return f"{self.name}"
+        return f"This cat is named {self.name}, sex {self.sex}, with the ID of {self.id}"
     
     """
     LocusO = orange gene
@@ -123,15 +132,19 @@ class Cat:
     cs/-  - Siamese
     c/c   - Albino
     """
-    # At some point replace this var input with an array or something :eyeroll:
+
     def create_genetics(self, newGenes):
 
-        # print(self.genes)
+        # Copies genes given and puts it into self.genes
         for i in range(0,11):
             index = math.ceil((i/2))
             
-            self.genes.iat[0, index] = newGenes[i]
-            self.genes.iat[1, index] = newGenes[i+1]
+            if i == 0 and self.sex == "M":
+                self.genes.iat[0, index] = newGenes[i]
+                self.genes.iat[1, index] = "x"
+            else:
+                self.genes.iat[0, index] = newGenes[i]
+                self.genes.iat[1, index] = newGenes[i+1]
         
         # Creates "phenotype" version of the genes
         # MAKE TOP ROW DOMINANT GENE 
@@ -150,11 +163,15 @@ class Cat:
     def show_genes(self, alleles, nonAlleles):
         message = ""
         if (alleles):
-            message += "--=-- Genetic (Alleles) --=--\n"
-            message += self.genes.to_string() + "\n\n"
+            message += "Alleles:\n"
+            message += tabulate(self.genes, headers='keys', tablefmt='psql', showindex="never") + "\n\n"
+            # message += self.genes.to_string() + "\n\n"
+            print(message)
         if (nonAlleles):
-            message += "--=-- Genetic (Non Alleles) --=--\n"
-            message += self.genesPheno.to_string()+ "\n\n"
+            message += "Alleles' Expression:\n"
+            message += tabulate(self.genesPheno, headers='keys', tablefmt='psql', showindex="never")+ "\n\n"
+            # message += self.genes.to_string() + "\n\n"
+            print(message)
         return message
 
     """
