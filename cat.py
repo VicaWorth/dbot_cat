@@ -1,10 +1,19 @@
+"""
+Written by Victoria Worthington
+
+The cat object holds each cat's genetic information, phenotype, and 
+cat creation. 
+
+It does NOT contain breeding information OR family trees.
+
+"""
+
 import pandas as pd
 import random 
 # import numpy as np 
 import math
 from datetime import datetime
 from tabulate import tabulate
-random.seed(datetime.now().timestamp())
 
 
 # This stops rows and coulmns from being cutoff
@@ -52,9 +61,9 @@ lookupColor = {
 
 class Cat:
     def __init__(self, sex, name, randomGen):
-        # this right now gets rid of trailling zeros
         # NOTE random generator is not seeded and seeds are apparently
         # depreciated
+        random.seed(datetime.now().timestamp())
         self.id = random.randint(1,1_000_000)
         self.sex = sex
         self.name = name
@@ -64,9 +73,9 @@ class Cat:
                                 'LocusO': [0, 1], # Orange
                                 'LocusB': [2, 3], # Black/Brown
                                 'LocusD': [4, 5], # Dilution
-                                'LocusA': [6, 7],
-                                'LocusS': [8, 9],
-                                'LocusC': [10, 11]
+                                'LocusA': [6, 7], # Agouti
+                                'LocusS': [8, 9], # Spotting
+                                'LocusC': [10, 11] # Colorpoint
                                 })
         # randomGen will create a randomly generated cat.
         # NOTE RIGHT NOW ITS NOT LOOKING AT CAT'S GENDER
@@ -99,6 +108,12 @@ class Cat:
     # This code is run whenever we do stuff like print(mycat)
     def __str__(self):
         return f"This cat is named {self.name}, sex {self.sex}, with the ID of {self.id}"
+    
+    def get_genes(self):
+        return self.genes
+    
+    def get_phenotype(self):
+        return self.genesPheno
     
     """
     LocusO = orange gene
@@ -164,12 +179,14 @@ class Cat:
         message = ""
         if (alleles):
             message += "Alleles:\n"
-            message += tabulate(self.genes, headers='keys', tablefmt='psql', showindex="never") + "\n\n"
+            message += tabulate(self.genes, headers='keys', showindex="never") + "\n\n"
             # message += self.genes.to_string() + "\n\n"
+            # for index, row in self.genes.iterrows():
+                # message += row.to_frame().T + '\n'
             print(message)
         if (nonAlleles):
             message += "Alleles' Expression:\n"
-            message += tabulate(self.genesPheno, headers='keys', tablefmt='psql', showindex="never")+ "\n\n"
+            message += tabulate(self.genesPheno, headers='keys', showindex="never")+ "\n\n"
             # message += self.genes.to_string() + "\n\n"
             print(message)
         return message
