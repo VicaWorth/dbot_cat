@@ -70,13 +70,14 @@ class Cat:
 
         #                         0        1   2
         self.genes = pd.DataFrame({
-                                'LocusO': [0, 1], # Orange
-                                'LocusB': [2, 3], # Black/Brown
-                                'LocusD': [4, 5], # Dilution
-                                'LocusA': [6, 7], # Agouti
-                                'LocusS': [8, 9], # Spotting
-                                'LocusC': [10, 11] # Colorpoint
+                                'LocusO': ['u', 'u'], # Orange
+                                'LocusB': ['u', 'u'], # Black/Brown
+                                'LocusD': ['u', 'u'], # Dilution
+                                'LocusA': ['u', 'u'], # Agouti
+                                'LocusS': ['u', 'u'], # Spotting
+                                'LocusC': ['u', 'u'] # Colorpoint
                                 })
+        self.genes.astype('string')
         # randomGen will create a randomly generated cat.
         # NOTE RIGHT NOW ITS NOT LOOKING AT CAT'S GENDER
         if randomGen == True:
@@ -100,7 +101,8 @@ class Cat:
                 else:
                     genesHolder.append(allChoices[i][r2])
                     genesHolder.append(allChoices[i][r1])
-            # Male cat cannot have second O gene.
+            # The create genetics panel will automatically handle
+            # male cats and their genetic dependencies (so dont worry about O)
             self.create_genetics(genesHolder)
                 
                     
@@ -151,6 +153,7 @@ class Cat:
     def create_genetics(self, newGenes):
 
         # Copies genes given and puts it into self.genes
+        self.genes.astype('object')
         for i in range(0,11):
             index = math.ceil((i/2))
             
@@ -165,6 +168,7 @@ class Cat:
         # MAKE TOP ROW DOMINANT GENE 
         
         self.genesPheno = self.genes.copy()
+        self.genesPheno.astype('object')
         for col in list(self.genesPheno):
             self.genesPheno[col][0] = lookupColor[self.genesPheno[col][0]]
             self.genesPheno[col][1] = lookupColor[self.genesPheno[col][1]]
@@ -175,32 +179,21 @@ class Cat:
     the variable alleles (when set to true) will print alleles
     otherwise it will print the gene expression (like orange/black)
     """
-    def show_genes(self, alleles, nonAlleles):
+    def print_genes(self, allelesTable: bool, phenoTable: bool):
         message = ""
-        if (alleles):
+        if (allelesTable):
             message += "Alleles:\n"
             message += tabulate(self.genes, headers='keys', showindex="never") + "\n\n"
             # message += self.genes.to_string() + "\n\n"
             # for index, row in self.genes.iterrows():
                 # message += row.to_frame().T + '\n'
             print(message)
-        if (nonAlleles):
+        if (phenoTable):
             message += "Alleles' Expression:\n"
             message += tabulate(self.genesPheno, headers='keys', showindex="never")+ "\n\n"
             # message += self.genes.to_string() + "\n\n"
             print(message)
         return message
-
-    """
-    The breeding profile could be used to compare two cats genes
-    and their types of offspring.
-
-    It might be useful for it to be able to create Punnett squares.
-    These can get extremely large with just a few genes,
-    So finding some kind of limitations on that will be important
-    """
-    def show_breeding_profile(self, mate):
-        print("-0-0-0- Breeding Profile -0-0-0- ")
 
     """
     Will calculate the cat's phenotype based off of its genes
@@ -209,7 +202,7 @@ class Cat:
     easier to calculate which genes should appear and which shouldn't
     For simplicity, Orange always appears before Not Orange.
     """
-    def phenotype(self):
+    def print_phenotype(self):
         message = "Something went wrong."
         O1 = self.genes.iat[0, 0]
         O2 = self.genes.iat[1, 0]
@@ -265,6 +258,15 @@ class Cat:
             message = (f"Your cat is a {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
         print(message)
         return message
+    
+    """
+    Prints out main information about cat
+
+    Including: Name, Sex, Id, and an Image of the cat.
+    """
+    def print_profile(self):
+        return f"Template"
+    
 
 # mycat = Cat('F', 'Snuggles', True)
 """

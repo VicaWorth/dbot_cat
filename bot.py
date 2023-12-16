@@ -19,8 +19,8 @@ async def generateCat(ctx, name="Snuggles", gender="u"):
     if name.isalpha() and gender == "M" or "F":
         newCat = Cat(gender, name, True)
         message0 = newCat 
-        message1 = newCat.phenotype()+ '\n'
-        message2 = newCat.show_genes(True, True)
+        message1 = newCat.print_phenotype()+ '\n'
+        message2 = newCat.print_genes(True, True)
         print(message1, message2)
         await ctx.reply(f"{message0}\n{message1}\n```{message2}```")
     else:
