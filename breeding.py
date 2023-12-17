@@ -14,7 +14,7 @@ This object DOES NOT generate the cat.
 import pandas as pd
 import random 
 # import numpy as np 
-import math
+# import math
 from datetime import datetime
 from tabulate import tabulate
 random.seed(datetime.now().timestamp())
@@ -42,7 +42,9 @@ class Breeding:
     def generate_punnetts(self, sex):
         if self.breedable == False:
             return "Not breedable"
+        # columnHeaders = ['LocusO','LocusB', 'LocusD','LocusA','LocusS', 'LocusC']
         punnetts = []
+        # punnetts.astype('object')
 
         print("MOTHER :")
         self.mother.print_genes(True, False)
@@ -64,28 +66,13 @@ class Breeding:
                       'C','cb','cs','c',
                       'x')
         for i in range((len(allChoices))-1):
-                punnett = self.generate_punnett(allChoices, lookupGene, i)
-                # Puts that into a list of other punnetts.
-                punnetts.append(punnett)
-                print(punnett, '\n')
+                punnetts.append(self.generate_punnett(allChoices, lookupGene, i))
 
-        #print(punnetts)
-        # genesHolder = []
-        # for i in range((len(allChoices))-1):
-        #     r1 = random.randint(0, len(allChoices[i])-1)
-        #     r2 = random.randint(0, len(allChoices[i])-1)
-        #     if r1 < r2:
-        #         genesHolder.append(allChoices[i][r1])
-        #         genesHolder.append(allChoices[i][r2])
-        #     else:
-        #         genesHolder.append(allChoices[i][r2])
-        #         genesHolder.append(allChoices[i][r1])
-        if sex == 'M':
+        # if sex == 'M':
 
-            print(punnett)
-        elif sex == 'F':
+        # elif sex == 'F':
 
-            print(punnett)
+        print(punnetts)
         return punnetts
     
     """
@@ -117,33 +104,42 @@ class Breeding:
 
         # Top left square
         if MI1 <= FI1:# r /c
-            punnett.iat[0, 0] = MA1 + '+' + FA1
+            punnett.iat[0, 0] = MA1 + ',,' + FA1
         elif MI1 > FI1:
-            punnett.iat[0, 0] = FA1 + '+' + MA1
+            punnett.iat[0, 0] = FA1 + ',,' + MA1
 
         # Top right square
         if MI2 <= FI1:
-            punnett.iat[0, 1] = MA2 + '+' + FA1
+            punnett.iat[0, 1] = MA2 + ',,' + FA1
         elif MI2 > FI1:
-            punnett.iat[0, 1] = FA1 + '+' + MA2
+            punnett.iat[0, 1] = FA1 + ',,' + MA2
         
         if FA2 != 'x':
             # Bottom left square
             if MI1 <= FI2:
-                punnett.iat[1, 0] = MA1 + '+' + FA2
+                punnett.iat[1, 0] = MA1 + ',,' + FA2
             elif MI1 > FI2:
-                punnett.iat[1, 0] = FA2 + '+' + MA1
+                punnett.iat[1, 0] = FA2 + ',,' + MA1
 
             # Bottom right square
             if MI2 <= FI2:
-                punnett.iat[1, 1] = MA2 + '+' + FA2
+                punnett.iat[1, 1] = MA2 + ',,' + FA2
             elif MI2 > FI2:
-                punnett.iat[1, 1] = FA2 + '+' + MA2
+                punnett.iat[1, 1] = FA2 + ',,' + MA2
         else:
             punnett.iat[1, 0] = MA1
             punnett.iat[1, 1] = MA2
         
-        return punnett
+        # print(punnett)
+        # print(punnett.value_counts("MA1"), punnett.value_counts("MA2"))
+        punnett.columns = ['MA1', 'MA2']
+        percentages = punnett.value_counts('MA1').add(punnett.value_counts('MA2'), fill_value=0)
+        # for index, value in percentages.items():
+        #     print(f"Index : {index}, Value : {value}")
+        percentages *= 25
+        # print(percentages)
+        punnett.columns = [MA1, MA2]
+        return percentages
 
 mother = Cat('F', 'Snuggles', True)
 father = Cat('M', 'Fluffy', True)
