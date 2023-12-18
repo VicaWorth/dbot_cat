@@ -60,7 +60,7 @@ lookupColor = {
               }
 
 class Cat:
-    def __init__(self, sex, name, randomGen):
+    def __init__(self, sex, name, randomGenFromScratch):
         # NOTE random generator is not seeded and seeds are apparently
         # depreciated
         random.seed(datetime.now().timestamp())
@@ -80,7 +80,10 @@ class Cat:
         self.genes.astype('string')
         # randomGen will create a randomly generated cat.
         # NOTE RIGHT NOW ITS NOT LOOKING AT CAT'S GENDER
-        if randomGen == True:
+        if randomGenFromScratch:
+            self.random_generate_s()
+    
+    def random_generate_s(self):
             # This tuple holds the number of options per allele
             # These are the locusts
             #             O B D A S C
@@ -104,8 +107,6 @@ class Cat:
             # The create genetics panel will automatically handle
             # male cats and their genetic dependencies (so dont worry about O)
             self.create_genetics(genesHolder)
-                
-                    
 
     # This code is run whenever we do stuff like print(mycat)
     def __str__(self):

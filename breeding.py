@@ -32,14 +32,38 @@ class Breeding:
             self.breedable = True
             self.mother = catTwo
             self.father = catOne
+        
+        if self.breedable:
+            self.punnetts = self.generate_punnetts()
+            # print(self.punnetts)
+            self.create_random_loadout()
+
+    def create_random_loadout(self):
+        genesTemplate = ['u', 'u',
+                        'u','u',
+                        'u','u',
+                        'u','u',
+                        'u','u',
+                        'u','u']
+        for i in range(len(self.punnetts)):
+            punnett = self.punnetts[i]
+            print(punnett.get('Chance'))
+            # print(random.choices(self.punnetts[i], weights=self.punnetts[i].get('Chance')))
+        
 
     def __str__(self):
         if self.breedable:
             return f"{self.mother} and {self.father} are a viable pair."
         else:
             return f"The cats provided cannot be bred. Check that you've provided a male and female cat."
-    
-    def generate_punnetts(self, sex):
+
+    """
+    Should be run AFTER generating punnetts.
+    """
+    def print_punnet(self, locus):
+        return "Eventually returns punnett square specified"
+
+    def generate_punnetts(self):
         if self.breedable == False:
             return "Not breedable"
         # columnHeaders = ['LocusO','LocusB', 'LocusD','LocusA','LocusS', 'LocusC']
@@ -65,20 +89,18 @@ class Breeding:
                       'Ws','ws',
                       'C','cb','cs','c',
                       'x')
+        locuses = ['LocusO','LocusB','LocusD','LocusA','LocusS','LocusC']
         for i in range((len(allChoices))-1):
-                punnetts.append(self.generate_punnett(allChoices, lookupGene, i))
+                punnett = self.generate_punnett(lookupGene, locuses[i], i)
+                punnetts.append(punnett)
+                # print(punnett)
 
-        # if sex == 'M':
-
-        # elif sex == 'F':
-
-        print(punnetts)
         return punnetts
     
     """
     Helper function of generate_punnetts that does most of the heavy lifting
     """
-    def generate_punnett(self, allChoices, lookupGene, index):
+    def generate_punnett(self, lookupGene, locus, index):
         MA1 = self.mother.genes.iat[0, index]
         MA2 = self.mother.genes.iat[1, index]
 
@@ -134,16 +156,15 @@ class Breeding:
         # print(punnett.value_counts("MA1"), punnett.value_counts("MA2"))
         punnett.columns = ['MA1', 'MA2']
         percentages = punnett.value_counts('MA1').add(punnett.value_counts('MA2'), fill_value=0)
-        # for index, value in percentages.items():
-        #     print(f"Index : {index}, Value : {value}")
         percentages *= 25
         # print(percentages)
-        punnett.columns = [MA1, MA2]
-        return percentages
+        newDf = percentages.to_frame(name=locus).reset_index()
+        newDf.rename(columns={0:'Alleles', 1:'Chance'})
+        return newDf
 
 mother = Cat('F', 'Snuggles', True)
 father = Cat('M', 'Fluffy', True)
 
 pair = Breeding(mother, father)
-pair.generate_punnetts(False)
+#pair.generate_punnetts(False)
 
