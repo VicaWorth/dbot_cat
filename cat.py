@@ -268,6 +268,8 @@ class Cat:
     def print_profile(self):
         return f"Template"
     
+    def print_image(self):
+        return f"prints an image of the cat"
 
 # mycat = Cat('F', 'Snuggles', True)
 """

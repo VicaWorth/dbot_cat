@@ -36,7 +36,7 @@ class Breeding:
         
         if self.breedable:
             self.punnetts = self.generate_punnetts()
-            # print(self.punnetts)
+
             child = self.create_random_loadout()
             child.print_phenotype()
 
@@ -48,12 +48,6 @@ class Breeding:
         if self.punnetts == None:
             self.generate_punnetts()
         else:
-            # genesTemplate = ['u', 'u',
-            #                 'u','u',
-            #                 'u','u',
-            #                 'u','u',
-            #                 'u','u',
-            #                 'u','u']
             genesTemplate = []
             # NOTE update this to enumerate later
             for i in range(len(self.punnetts)):
@@ -73,13 +67,15 @@ class Breeding:
                         parsedAlleles = pop.split(',,')
                         print(parsedAlleles)
                         genesTemplate.append(parsedAlleles[0])
-                        genesTemplate.append(parsedAlleles[1])
+                        genesTemplate.append(parsedAlleles[1]) 
                     # Checks if the value given is just X and not X,,x
                     elif ',,' not in pop[0]:
                         genesTemplate.append(pop[0])
                         genesTemplate.append(pop[0])
                     else:
                         unparsedAlleles = random.choices(pop, weights=weights, k=1)
+                        # NOTE update this later to be cleaner
+                        # Checks same thing as above but after randomly selecting. 
                         if ',,' not in unparsedAlleles[0]:
                             genesTemplate.append(unparsedAlleles[0])
                             genesTemplate.append(unparsedAlleles[0])
@@ -106,12 +102,16 @@ class Breeding:
     Should be run AFTER generating punnetts.
     """
     def print_punnet(self, locus):
-        return "Eventually returns punnett square specified"
+        for punnett in self.punnetts:
+            if punnett.columns[1] == locus:
+                print(punnett)
+                return punnett
+        print("Not found")
+        return "Punnett for that Locus was not found."
 
     def generate_punnetts(self):
         if self.breedable == False:
             return "Could not generate punnetts. Check if pair provided can breed."
-        # columnHeaders = ['LocusO','LocusB', 'LocusD','LocusA','LocusS', 'LocusC']
         punnetts = []
         # punnetts.astype('object')
 
@@ -134,7 +134,6 @@ class Breeding:
         for i in range((len(allChoices))-1):
                 punnett = self.generate_punnett(lookupGene, locuses[i], i)
                 punnetts.append(punnett)
-                # print(punnett)
 
         return punnetts
     
@@ -154,8 +153,6 @@ class Breeding:
         FI1 = lookupGene.index(FA1)
         FI2 = lookupGene.index(FA2)
 
-        # print(f"{MA1} {MA2} <- mother genes\n {FA1} {FA2} <- father genes\n ")
-        # print(f"{MI1} {MI2} <- mother index\n {FI1} {FI2} <- father index\n ")
         # Creates a punnett square of the Locus
         columnHeaders = [MA1, MA2]
         body =  (['u', 'u'], 
@@ -193,12 +190,10 @@ class Breeding:
             punnett.iat[1, 0] = MA1
             punnett.iat[1, 1] = MA2
         
-        # print(punnett)
-        # print(punnett.value_counts("MA1"), punnett.value_counts("MA2"))
         punnett.columns = ['MA1', 'MA2']
         percentages = punnett.value_counts('MA1').add(punnett.value_counts('MA2'), fill_value=0)
         percentages *= 25
-        # print(percentages)
+
         newDf = percentages.to_frame(name=locus).reset_index()
         newDf.rename(columns={0:'Alleles', 1:'Chance'})
         return newDf
@@ -215,5 +210,5 @@ father.print_phenotype()
 print("\n\n")
 
 pair = Breeding(mother, father)
-#pair.generate_punnetts(False)
+pair.print_punnet("LocusA")
 
