@@ -5,9 +5,8 @@ Step 1:
 - [X] Can create a cat via the bot
 - [X] Can create pennett square with two cats to see their possible offspring
 - [ ] Can check if a certain gene is possible with a pairing
-- [ ]  Create pictures of cat (We can use emojis/reacts via discord)
-- [ ] 
--  None of this will be saved, you can just run this while you are using once it shuts off, the data is lost.
+- [ ]  Create pictures of cat (We can use emojis/reacts via discord
+None of this will be saved, you can just run this while you are using once it shuts off, the data is lost.
 Step 2:
 - [ ]  Save cat data to SQL database
 
