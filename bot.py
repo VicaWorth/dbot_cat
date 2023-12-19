@@ -19,10 +19,10 @@ async def generateCat(ctx, name="Snuggles", gender="u"):
     if name.isalpha() and gender == "M" or "F":
         newCat = Cat(gender, name, True)
         message0 = newCat 
-        message1 = newCat.print_phenotype()+ '\n'
-        message2 = newCat.print_genes(True, True)
-        print(message1, message2)
-        await ctx.reply(f"{message0}\n{message1}\n```{message2}```")
+        newCat.create_tables()
+        
+        table = discord.File(f"{gender}.png")
+        await ctx.send(file=table, content=f"{message0}")
     else:
         await ctx.reply("You inputed something incorrectly.")
 

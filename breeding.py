@@ -120,14 +120,14 @@ class Breeding:
                         ('B','b','b1'),
                         ('D','d'),
                         ('MC','mc','a'),
-                        ('Ws','ws'),
+                        ('Ws','ws', 'wx'),
                         ('C','cb','cs','c'),
                         ('x'))
         lookupGene = ('O','o',
                       'B','b','b1',
                       'D','d',
                       'MC','mc','a',
-                      'Ws','ws',
+                      'Ws','ws','wx',
                       'C','cb','cs','c',
                       'x')
         locuses = ['LocusO','LocusB','LocusD','LocusA','LocusS','LocusC']

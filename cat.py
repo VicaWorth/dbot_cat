@@ -10,6 +10,7 @@ It does NOT contain breeding information OR family trees.
 
 import pandas as pd
 import random 
+from plotter import Plotter
 # import numpy as np 
 import math
 from datetime import datetime
@@ -48,6 +49,7 @@ lookupColor = {
             # Locus S (White Spots)
                 'Ws': 'Large',
                 'ws': 'Small',
+                'wx': 'None',
             # Locus C (Color point or Siamese)
                 'C': 'No Colorpoint',
                 'cb': 'Burmese', # cb and cs are incomplete dominance. So together the create a tonkinese
@@ -91,7 +93,7 @@ class Cat:
                           ('B','b','b1'),
                           ('D','d'),
                           ('MC','mc','a'),
-                          ('Ws','ws'),
+                          ('Ws','ws', 'wx'),
                           ('C','cb','cs','c'),
                           ('x'))
             genesHolder = []
@@ -118,6 +120,10 @@ class Cat:
     def get_phenotype(self):
         return self.genesPheno
     
+    def create_tables(self):
+        allelesPlot = Plotter(self.genes, self.name)
+        phenoPlot = Plotter(self.genesPheno, self.sex)
+    
     """
     LocusO = orange gene
     X-Chromosome dependent
@@ -141,7 +147,7 @@ class Cat:
     LocusS = white spots gene
     Ws/-  - Large white spots
     ws/-  - Little or no white spots
-    x/x   - No white spotting 
+    wx/wx   - No white spotting 
 
     LocusC = color point gene
     C/-   - No colorpoint
@@ -174,6 +180,7 @@ class Cat:
             self.genesPheno[col][0] = lookupColor[self.genesPheno[col][0]]
             self.genesPheno[col][1] = lookupColor[self.genesPheno[col][1]]
             # self.genesPheno.at[index, row] = lookupColor[self.genesPheno.at[index, row]]
+        
     
     """
     Prints the genetics of a cat in a table,
