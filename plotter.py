@@ -1,40 +1,34 @@
 import matplotlib.pyplot as plt
+import numpy as np
 from pandas.plotting import table 
 import pandas as pd
 
 class Plotter:
-    def __init__(self, table, name):
-        self.table = table
-        self.name = name
-        self.table_to_image()
+    def __init__(self, tables : list, imageName):
+        self.tables = tables
+        self.imageName = imageName
+        
         pd.set_option("display.max_column" , None)
         pd.set_option("display.max_colwidth", None)
         pd.set_option('display.width', -1)
         pd.set_option('display.max_rows', None)
 
-    def table_to_image(self):
-        fig, ax = plt.subplots()
-        fig.patch.set_visible(False)
-        ax.axis('off')
-        ax.axis('tight')
+        self.table_to_image()
 
-        table = ax.table(cellText=self.table.values, colLabels=self.table.columns, loc="center")
+    def table_to_image(self):
+        lenPlots = len(self.tables)
+        fig, axs = plt.subplots(lenPlots)
+
+        fig.patch.set_visible(False)
+        counter = 0
+        for table in self.tables:
+            axs[counter].axis('off')
+            axs[counter].axis('tight')
+            tableDrawn = axs[counter].table(cellText=table.values, colLabels=table.columns, loc="center")
         
-        table.set_fontsize(14)
-        table.scale(1,4)
+            tableDrawn.set_fontsize(14)
+            tableDrawn.scale(1,4)
+            counter += 1
         
         fig.tight_layout()
-        plt.savefig(f'{self.name}.png')
-
-    # def table_styler(self, styler):
-    #     styler.set_caption("Test")
-    #     styler.format()
-
-# fig = plt.figure()
-# ax = fig.add_subplot(111)
-# ax.plot(range(100))
-# fig.savefig('graph.png')
-
-# newcat = Cat('F', "Snuggles", True)
-# print(newcat.get_genes())
-# newPlot = Plotter(newcat.get_genes())
+        plt.savefig(f'tables/{self.imageName}.png')

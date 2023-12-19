@@ -25,6 +25,7 @@ class Breeding:
     def __init__(self, catOne: Cat, catTwo: Cat):
         self.breedable = False
         self.punnetts = None
+        self.child = None
         if catOne.sex == 'F' and catTwo.sex == 'M':
             self.breedable = True
             self.mother = catOne
@@ -37,8 +38,14 @@ class Breeding:
         if self.breedable:
             self.punnetts = self.generate_punnetts()
 
-            child = self.create_random_loadout()
-            child.print_phenotype()
+            self.child = self.create_random_loadout()
+            self.child.create_tables()
+
+    def get_child(self):
+        if self.child != None:
+            return self.child
+        else:
+            return "Couldn't find child"
 
     """
     This function will generate a potential offspring using the random chances
@@ -197,18 +204,3 @@ class Breeding:
         newDf = percentages.to_frame(name=locus).reset_index()
         newDf.rename(columns={0:'Alleles', 1:'Chance'})
         return newDf
-
-print("\n\nMOTHER")
-mother = Cat('F', 'Snuggles', True)
-mother.print_genes(True, False)
-mother.print_phenotype()
-
-print("\n\nFATHER")
-father = Cat('M', 'Fluffy', True)
-father.print_genes(True, False)
-father.print_phenotype()
-print("\n\n")
-
-pair = Breeding(mother, father)
-pair.print_punnet("LocusA")
-

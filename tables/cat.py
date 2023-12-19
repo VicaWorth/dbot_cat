@@ -121,8 +121,8 @@ class Cat:
         return self.genesPheno
     
     def create_tables(self):
-        allelesPlot = Plotter([self.genes, self.genesPheno], self.name)
-        # phenoPlot = Plotter(self.genesPheno, self.sex)
+        allelesPlot = Plotter(self.genes, self.name)
+        phenoPlot = Plotter(self.genesPheno, self.sex)
     
     """
     LocusO = orange gene
@@ -296,3 +296,4 @@ LocusC - color point gene
 # mycat.create_genetics(myGenes)
 # mycat.show_genes(True, True)
 # mycat.phenotype()
+
