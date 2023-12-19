@@ -13,7 +13,7 @@ This object DOES NOT generate the cat.
 # im not really importing the whole file???
 import pandas as pd
 import random 
-# import numpy as np 
+import numpy as np 
 # import math
 from datetime import datetime
 from tabulate import tabulate
@@ -24,6 +24,7 @@ from cat import Cat
 class Breeding:
     def __init__(self, catOne: Cat, catTwo: Cat):
         self.breedable = False
+        self.punnetts = None
         if catOne.sex == 'F' and catTwo.sex == 'M':
             self.breedable = True
             self.mother = catOne
@@ -36,19 +37,63 @@ class Breeding:
         if self.breedable:
             self.punnetts = self.generate_punnetts()
             # print(self.punnetts)
-            self.create_random_loadout()
+            child = self.create_random_loadout()
+            child.print_phenotype()
 
+    """
+    This function will generate a potential offspring using the random chances
+    from the punnett.
+    """
     def create_random_loadout(self):
-        genesTemplate = ['u', 'u',
-                        'u','u',
-                        'u','u',
-                        'u','u',
-                        'u','u',
-                        'u','u']
-        for i in range(len(self.punnetts)):
-            punnett = self.punnetts[i]
-            print(punnett.get('Chance'))
-            # print(random.choices(self.punnetts[i], weights=self.punnetts[i].get('Chance')))
+        if self.punnetts == None:
+            self.generate_punnetts()
+        else:
+            # genesTemplate = ['u', 'u',
+            #                 'u','u',
+            #                 'u','u',
+            #                 'u','u',
+            #                 'u','u',
+            #                 'u','u']
+            genesTemplate = []
+            # NOTE update this to enumerate later
+            for i in range(len(self.punnetts)):
+                    punnett = self.punnetts[i]
+
+                    columnNameI = punnett.columns[0]
+                    columnNameL = punnett.columns[1]
+
+                    # Gets population and weights, converting them from dataframe to series
+                    pop = punnett.get(columnNameI).squeeze()
+                    weights = punnett.get(columnNameL).squeeze()
+                    # print(f"Weights: {weights}\n Type: {type(weights)}")
+                    
+                    # Checks if the weights are an integer
+                    # If they are, it means there is only one weight (100%)
+                    if isinstance(weights, np.integer):
+                        parsedAlleles = pop.split(',,')
+                        print(parsedAlleles)
+                        genesTemplate.append(parsedAlleles[0])
+                        genesTemplate.append(parsedAlleles[1])
+                    # Checks if the value given is just X and not X,,x
+                    elif ',,' not in pop[0]:
+                        genesTemplate.append(pop[0])
+                        genesTemplate.append(pop[0])
+                    else:
+                        unparsedAlleles = random.choices(pop, weights=weights, k=1)
+                        if ',,' not in unparsedAlleles[0]:
+                            genesTemplate.append(unparsedAlleles[0])
+                            genesTemplate.append(unparsedAlleles[0])
+                        else:
+                            parsedAlleles = unparsedAlleles[0].split(',,')     
+                            genesTemplate.append(parsedAlleles[0]) 
+                            genesTemplate.append(parsedAlleles[1])
+
+            # print(genesTemplate)
+            child = Cat('u', 'unnamed', False)
+            child.create_genetics(genesTemplate)
+            print("Child")
+            child.print_genes(True, False)
+            return child
         
 
     def __str__(self):
@@ -65,15 +110,11 @@ class Breeding:
 
     def generate_punnetts(self):
         if self.breedable == False:
-            return "Not breedable"
+            return "Could not generate punnetts. Check if pair provided can breed."
         # columnHeaders = ['LocusO','LocusB', 'LocusD','LocusA','LocusS', 'LocusC']
         punnetts = []
         # punnetts.astype('object')
 
-        print("MOTHER :")
-        self.mother.print_genes(True, False)
-        print("Father :")
-        self.father.print_genes(True, False)
         # NOTE This has all been copy pasted from cat.py
         allChoices = (  ('O','o'),
                         ('B','b','b1'),
@@ -162,8 +203,16 @@ class Breeding:
         newDf.rename(columns={0:'Alleles', 1:'Chance'})
         return newDf
 
+print("\n\nMOTHER")
 mother = Cat('F', 'Snuggles', True)
+mother.print_genes(True, False)
+mother.print_phenotype()
+
+print("\n\nFATHER")
 father = Cat('M', 'Fluffy', True)
+father.print_genes(True, False)
+father.print_phenotype()
+print("\n\n")
 
 pair = Breeding(mother, father)
 #pair.generate_punnetts(False)

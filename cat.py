@@ -254,9 +254,9 @@ class Cat:
             message = ("Cat's sex cannot be determined.")
         
         if tortie == True:
-            message = (f"Your cat is a {colorpoint} {tabby} (stripes) Tortoiseshell, colored {baseColor[0]} and {baseColor[1]} with {whitespotting} White Spots.")
+            message = (f"{self.name} is a {colorpoint} {tabby} (stripes) Tortoiseshell, colored {baseColor[0]} and {baseColor[1]} with {whitespotting} White Spots.")
         else:
-            message = (f"Your cat is a {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
+            message = (f"{self.name} is a {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
         print(message)
         return message
     
