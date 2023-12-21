@@ -10,7 +10,7 @@ It does NOT contain breeding information OR family trees.
 
 import pandas as pd
 import random 
-from plotter import Plotter
+
 # import numpy as np 
 import math
 from datetime import datetime
@@ -120,9 +120,9 @@ class Cat:
     def get_phenotype(self):
         return self.genesPheno
     
-    def create_tables(self):
-        allelesPlot = Plotter([self.genes, self.genesPheno], self.name)
-        # phenoPlot = Plotter(self.genesPheno, self.sex)
+    # def create_tables(self):
+    #     allelesPlot = Plotter([self.genes, self.genesPheno], self.name)
+    #     # phenoPlot = Plotter(self.genesPheno, self.sex)
     
     """
     LocusO = orange gene

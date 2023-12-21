@@ -39,7 +39,6 @@ class Breeding:
             self.punnetts = self.generate_punnetts()
 
             self.child = self.create_random_loadout()
-            self.child.create_tables()
 
     def get_child(self):
         if self.child != None:
