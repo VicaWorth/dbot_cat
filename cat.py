@@ -11,6 +11,8 @@ It does NOT contain breeding information OR family trees.
 import pandas as pd
 import random 
 
+import mysql.connector
+
 # import numpy as np 
 import math
 from datetime import datetime
@@ -62,7 +64,9 @@ lookupColor = {
               }
 
 class Cat:
-    def __init__(self, sex, name, randomGenFromScratch):
+    def __init__(self, userID, sex, name, randomGenFromScratch):
+        self.userID = userID
+        self.catdb = None
         # NOTE random generator is not seeded and seeds are apparently
         # depreciated
         random.seed(datetime.now().timestamp())
@@ -278,21 +282,46 @@ class Cat:
     def print_image(self):
         return f"prints an image of the cat"
 
-# mycat = Cat('F', 'Snuggles', True)
-"""
-LocusO - Orange or Black
-LocusB - Chocolate/Cinnamon
-LocusD - Dilution or Not
-LocusA - Stripes/Tabby gene
-LocusS - White Spots gene
-LocusC - color point gene
-"""
-# myGenes = ['O', 'O',
-#         'b1','b1',
-#         'd','d',
-#         'MC','mc',
-#         'Ws','x',
-#         'C','C']
-# mycat.create_genetics(myGenes)
-# mycat.show_genes(True, True)
-# mycat.phenotype()
+    def setup_sql(self):
+        self.catdb = mysql.connector.connect(
+            host = "localhost",
+            database="discordcatdb",
+            user = "readerwriter",
+            password = "readerwriter"
+        )
+
+        self.cursor = self.catdb.cursor()     
+
+    def close_sql(self):
+        self.cursor.close()
+        self.catdb.close()
+
+    def save_cat(self):
+        if self.catdb == None:
+            self.setup_sql()
+        
+        print(self.genes)
+        addCat = ("INSERT INTO cats"
+                  "(userid, LocusO1, LocusO2, LocusB1, LocusB2, LocusD1, LocusD2, LocusA1, LocusA2, LocusS1, LocusS2, LocusC1, LocusC2)"
+                  "VALUES (%(userid)s, %(LocusO1)s, %(LocusO2)s, %(LocusB1)s, %(LocusB2)s, %(LocusD1)s, %(LocusD2)s, %(LocusA1)s, %(LocusA2)s, %(LocusS1)s, %(LocusS2)s, %(LocusC1)s, %(LocusC2)s)")
+        dataGenes = {
+            # 'catsid': self.id,
+            'userid': self.userID,
+            'LocusO1': self.genes.iat[0, 0],
+            'LocusO2': self.genes.iat[1, 0],
+            'LocusB1': self.genes.iat[0, 1],
+            'LocusB2': self.genes.iat[1, 1],
+            'LocusD1': self.genes.iat[0, 2],
+            'LocusD2': self.genes.iat[1, 2],
+            'LocusA1': self.genes.iat[0, 3],
+            'LocusA2': self.genes.iat[1, 3],
+            'LocusS1': self.genes.iat[0, 4],
+            'LocusS2':  self.genes.iat[1, 4],
+            'LocusC1': self.genes.iat[0, 5],
+            'LocusC2':  self.genes.iat[1, 5]           
+        }
+
+        self.cursor.execute(addCat, dataGenes)
+        self.catdb.commit()
+
+        self.close_sql()

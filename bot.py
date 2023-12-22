@@ -18,7 +18,10 @@ bot = commands.Bot(command_prefix='>', intents=intents)
 @bot.command()
 async def generateCat(ctx, name="Snuggles", gender="u"):
     if name.isalpha() and gender == "M" or "F":
-        newCat = Cat(gender, name, True)
+        userID = ctx.author.id
+
+        newCat = Cat(userID, gender, name, True)
+        newCat.save_cat()
         message0 = newCat
         message1 = newCat.print_phenotype()
 
@@ -37,8 +40,10 @@ async def generateCat(ctx, name="Snuggles", gender="u"):
 
 @bot.command()
 async def breedCats(ctx):
-    mom = Cat('F', "Mother", True)
-    dad = Cat('M', "Father", True)
+    userID = ctx.author.id
+
+    mom = Cat(userID, 'F', "Mother", True)
+    dad = Cat(userID, 'M', "Father", True)
     
     pair = Breeding(mom, dad)
     child = pair.get_child()
