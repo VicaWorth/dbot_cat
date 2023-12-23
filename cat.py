@@ -64,17 +64,14 @@ lookupColor = {
               }
 
 class Cat:
-    def __init__(self, userID, sex, name, randomGenFromScratch):
+    def __init__(self, userID, catID, exists : bool):
+        # Initializes everything as unknown
         self.userID = userID
         self.catdb = None
-        # NOTE random generator is not seeded and seeds are apparently
-        # depreciated
-        random.seed(datetime.now().timestamp())
-        self.id = random.randint(1,1_000_000)
-        self.sex = sex
-        self.name = name
+        self.sex = 'u'
+        self.name = 'unknown'
+        self.id = 0
 
-        #                         0        1   2
         self.genes = pd.DataFrame({
                                 'LocusO': ['u', 'u'], # Orange
                                 'LocusB': ['u', 'u'], # Black/Brown
@@ -83,13 +80,23 @@ class Cat:
                                 'LocusS': ['u', 'u'], # Spotting
                                 'LocusC': ['u', 'u'] # Colorpoint
                                 })
+        self.genesPheno = self.genes.copy()
         self.genes.astype('string')
-        # randomGen will create a randomly generated cat.
-        # NOTE RIGHT NOW ITS NOT LOOKING AT CAT'S GENDER
-        if randomGenFromScratch:
-            self.random_generate_s()
+
+        if exists == True:
+            self.load_cat(catID)
+    
+    def seeder():
+        random.seed(datetime.now().timestamp())
+
+    def new_cat_creation(self, sex, name):
+        self.sex = sex
+        self.name = name
+        self.random_generate_s()
+        self.save_cat()
     
     def random_generate_s(self):
+
             # This tuple holds the number of options per allele
             # These are the locusts
             #             O B D A S C
@@ -290,23 +297,29 @@ class Cat:
             password = "readerwriter"
         )
 
-        self.cursor = self.catdb.cursor()     
+        self.cursor = self.catdb.cursor()
 
     def close_sql(self):
         self.cursor.close()
         self.catdb.close()
 
+
+    """
+    Saves the current cat into the SQL database
+    """
     def save_cat(self):
         if self.catdb == None:
             self.setup_sql()
         
         print(self.genes)
         addCat = ("INSERT INTO cats"
-                  "(userid, LocusO1, LocusO2, LocusB1, LocusB2, LocusD1, LocusD2, LocusA1, LocusA2, LocusS1, LocusS2, LocusC1, LocusC2)"
-                  "VALUES (%(userid)s, %(LocusO1)s, %(LocusO2)s, %(LocusB1)s, %(LocusB2)s, %(LocusD1)s, %(LocusD2)s, %(LocusA1)s, %(LocusA2)s, %(LocusS1)s, %(LocusS2)s, %(LocusC1)s, %(LocusC2)s)")
+                  "(userid, catsname, catssex, LocusO1, LocusO2, LocusB1, LocusB2, LocusD1, LocusD2, LocusA1, LocusA2, LocusS1, LocusS2, LocusC1, LocusC2)"
+                  "VALUES (%(userid)s, %(catsname)s, %(catssex)s,  %(LocusO1)s, %(LocusO2)s, %(LocusB1)s, %(LocusB2)s, %(LocusD1)s, %(LocusD2)s, %(LocusA1)s, %(LocusA2)s, %(LocusS1)s, %(LocusS2)s, %(LocusC1)s, %(LocusC2)s)")
         dataGenes = {
             # 'catsid': self.id,
             'userid': self.userID,
+            'catsname': self.name,
+            'catssex': self.sex,
             'LocusO1': self.genes.iat[0, 0],
             'LocusO2': self.genes.iat[1, 0],
             'LocusB1': self.genes.iat[0, 1],
@@ -325,3 +338,41 @@ class Cat:
         self.catdb.commit()
 
         self.close_sql()
+
+    """
+    Loads a cat into the database
+    """
+    def load_cat(self, catID):
+        if self.catdb == None:
+            self.setup_sql()
+        
+        query = (f"SELECT * FROM cats WHERE catsid = {catID}")
+        self.cursor.execute(query)
+
+        result = self.cursor.fetchone()
+
+        row = result
+        self.id = row[0]
+        self.name = row[2]
+        self.sex = row[3]
+        genes = row[4 : ]
+        print(row)
+        print(genes)
+        self.create_genetics(genes)
+
+        self.close_sql()
+        return True
+            
+    def load_id(self):
+        if self.catdb == None:
+            self.setup_sql()
+        
+        query = ("SELECT catsid FROM cats ORDER BY catsid DESC LIMIT 1")
+        print(self.cursor)
+        
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
+        self.id = result[0]
+        self.close_sql()
+
+        

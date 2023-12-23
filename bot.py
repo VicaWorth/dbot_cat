@@ -16,12 +16,12 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='>', intents=intents)
 
 @bot.command()
-async def generateCat(ctx, name="Snuggles", gender="u"):
-    if name.isalpha() and gender == "M" or "F":
+async def generateNewRandomCat(ctx, name="Snuggles", sex="u"):
+    if name.isalpha() and sex == "M" or "F":
         userID = ctx.author.id
 
-        newCat = Cat(userID, gender, name, True)
-        newCat.save_cat()
+        newCat = Cat(userID, 0, False)
+        newCat.new_cat_creation(sex, name)
         message0 = newCat
         message1 = newCat.print_phenotype()
 
@@ -39,14 +39,32 @@ async def generateCat(ctx, name="Snuggles", gender="u"):
         await ctx.reply("You inputed something incorrectly.")
 
 @bot.command()
-async def breedCats(ctx):
+async def loadCat(ctx, catID):
     userID = ctx.author.id
 
-    mom = Cat(userID, 'F', "Mother", True)
-    dad = Cat(userID, 'M', "Father", True)
+    newCat = Cat(userID, catID, True)
+    message0 = newCat
+
+    tablesToPrint = []
+    new_genes1 = newCat.get_genes()
+    new_genes2 = newCat.get_phenotype()
+    tablesToPrint.append(new_genes1)
+    tablesToPrint.append(new_genes2)
+    plotted = Plotter(tablesToPrint, "newtable")
+
+    table = discord.File(f"tables/newTable.png")
+    await ctx.send(file=table, content=f"{message0}")
+
+@bot.command()
+async def breedCats(ctx, motherID, fatherID):
+    userID = ctx.author.id
+
+    mom = Cat(userID, motherID, True)
+    dad = Cat(userID, fatherID, True)
     
     pair = Breeding(mom, dad)
     child = pair.get_child()
+    child.save_cat()
     message0 = child.print_phenotype()
     
     tablesToPrint = [ ]
