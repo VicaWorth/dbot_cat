@@ -16,6 +16,14 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='>', intents=intents)
 
 @bot.command()
+async def helpCat(ctx):
+    message = "# Catbot! WOOHOO\n Commands are run via >\n"
+    message += "## >generateNewRandomCat name sex\n Will generate a new cat"
+    message += "\n## >loadCat id\n Will load a new cat"
+    message += "\n## >breedCats motherID fatherID\n Will breed two cats"
+    await ctx.send(content=message)
+
+@bot.command()
 async def generateNewRandomCat(ctx, name="Snuggles", sex="u"):
     if name.isalpha() and sex == "M" or "F":
         userID = ctx.author.id
@@ -64,7 +72,7 @@ async def breedCats(ctx, motherID, fatherID):
     
     pair = Breeding(mom, dad)
     child = pair.get_child()
-    child.save_cat()
+    # child.save_cat()
     message0 = child.print_phenotype()
     
     tablesToPrint = [ ]
