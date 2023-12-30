@@ -4,7 +4,7 @@ Written by Victoria Worthington
 The cat object holds each cat's genetic information, phenotype, and 
 cat creation. 
 
-It does NOT contain breeding information OR family trees.
+It does NOT contain breeding information.
 
 """
 
@@ -69,8 +69,11 @@ class Cat:
         self.userID = userID
         self.catdb = None
         self.sex = 'u'
-        self.name = 'unknown'
+        self.name = 'Unknown'
         self.id = 0
+
+        self.fatherID = 0
+        self.motherID = 0
 
         self.genes = pd.DataFrame({
                                 'LocusO': ['u', 'u'], # Orange
@@ -89,11 +92,15 @@ class Cat:
     def seeder():
         random.seed(datetime.now().timestamp())
 
-    def new_cat_creation(self, sex, name):
+    def new_cat_creation(self, sex, name, randomGen : bool, genes):
         self.sex = sex
         self.name = name
-        self.random_generate_s()
+        if randomGen:
+            self.random_generate_s()
+        else:
+            self.create_genetics(genes)
         self.save_cat()
+        self.load_id()
     
     def random_generate_s(self):
 
@@ -125,6 +132,10 @@ class Cat:
     def __str__(self):
         return f"This cat is named {self.name}, sex {self.sex}, with the ID of {self.id}"
     
+    def set_parents(self, fatherID, motherID):
+        self.fatherID = fatherID
+        self.motheriD = motherID
+
     def get_genes(self):
         return self.genes
     
@@ -272,9 +283,9 @@ class Cat:
             message = ("Cat's sex cannot be determined.")
         
         if tortie == True:
-            message = (f"{self.name} is a {colorpoint} {tabby} (stripes) Tortoiseshell, colored {baseColor[0]} and {baseColor[1]} with {whitespotting} White Spots.")
+            message = (f"{self.name} is a sex: {self.sex}, {colorpoint} {tabby} (stripes) Tortoiseshell, colored {baseColor[0]} and {baseColor[1]} with {whitespotting} White Spots.")
         else:
-            message = (f"{self.name} is a {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
+            message = (f"{self.name} is a sex: {self.sex}, {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
         print(message)
         return message
     
@@ -289,6 +300,12 @@ class Cat:
     def print_image(self):
         return f"prints an image of the cat"
 
+    """
+    Creates the SQL connection
+
+    This system might be better if its a global variable
+    rather than something that opens and closes all the time
+    """
     def setup_sql(self):
         self.catdb = mysql.connector.connect(
             host = "localhost",
@@ -297,11 +314,15 @@ class Cat:
             password = "readerwriter"
         )
 
-        self.cursor = self.catdb.cursor()
+        self.cursor = self.catdb.cursor(buffered=True)
 
+    """
+    Clears the SQL connection
+    """
     def close_sql(self):
         self.cursor.close()
         self.catdb.close()
+        self.catdb = None
 
 
     """
@@ -315,7 +336,7 @@ class Cat:
         addCat = ("INSERT INTO cats"
                   "(userid, catsname, catssex, LocusO1, LocusO2, LocusB1, LocusB2, LocusD1, LocusD2, LocusA1, LocusA2, LocusS1, LocusS2, LocusC1, LocusC2)"
                   "VALUES (%(userid)s, %(catsname)s, %(catssex)s,  %(LocusO1)s, %(LocusO2)s, %(LocusB1)s, %(LocusB2)s, %(LocusD1)s, %(LocusD2)s, %(LocusA1)s, %(LocusA2)s, %(LocusS1)s, %(LocusS2)s, %(LocusC1)s, %(LocusC2)s)")
-        dataGenes = {
+        dataCat = {
             # 'catsid': self.id,
             'userid': self.userID,
             'catsname': self.name,
@@ -334,7 +355,7 @@ class Cat:
             'LocusC2':  self.genes.iat[1, 5]           
         }
 
-        self.cursor.execute(addCat, dataGenes)
+        self.cursor.execute(addCat, dataCat)
         self.catdb.commit()
 
         self.close_sql()
@@ -348,6 +369,7 @@ class Cat:
         
         query = (f"SELECT * FROM cats WHERE catsid = {catID}")
         self.cursor.execute(query)
+        self.catdb.commit()
 
         result = self.cursor.fetchone()
 
@@ -362,17 +384,19 @@ class Cat:
 
         self.close_sql()
         return True
-            
+    
+    """
+    Finds the ID of the latest generated cat  
+    """
     def load_id(self):
+        print("self.catDB: ", self.catdb)
         if self.catdb == None:
             self.setup_sql()
         
         query = ("SELECT catsid FROM cats ORDER BY catsid DESC LIMIT 1")
-        print(self.cursor)
         
         self.cursor.execute(query)
         result = self.cursor.fetchone()
         self.id = result[0]
         self.close_sql()
 
-        

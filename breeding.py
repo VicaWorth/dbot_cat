@@ -22,7 +22,8 @@ random.seed(datetime.now().timestamp())
 from cat import Cat
 
 class Breeding:
-    def __init__(self, catOne: Cat, catTwo: Cat):
+    def __init__(self, userID, catOne: Cat, catTwo: Cat):
+        self.userID = userID
         self.breedable = False
         self.punnetts = None
         self.child = None
@@ -54,6 +55,11 @@ class Breeding:
         if self.punnetts == None:
             self.generate_punnetts()
         else:
+            sex = 'F'
+            ss = random.randint(0, 3)
+            if (ss > 1):
+                sex = 'M'
+
             genesTemplate = []
             # NOTE update this to enumerate later
             for i in range(len(self.punnetts)):
@@ -61,40 +67,52 @@ class Breeding:
 
                     columnNameI = punnett.columns[0]
                     columnNameL = punnett.columns[1]
-
+                    
                     # Gets population and weights, converting them from dataframe to series
                     pop = punnett.get(columnNameI).squeeze()
                     weights = punnett.get(columnNameL).squeeze()
-                    # print(f"Weights: {weights}\n Type: {type(weights)}")
-                    
-                    # Checks if the weights are an integer
-                    # If they are, it means there is only one weight (100%)
-                    if isinstance(weights, np.integer):
-                        parsedAlleles = pop.split(',,')
-                        print(parsedAlleles)
-                        genesTemplate.append(parsedAlleles[0])
-                        genesTemplate.append(parsedAlleles[1]) 
-                    # Checks if the value given is just X and not X,,x
-                    elif ',,' not in pop[0]:
-                        genesTemplate.append(pop[0])
-                        genesTemplate.append(pop[0])
-                    else:
-                        unparsedAlleles = random.choices(pop, weights=weights, k=1)
-                        # NOTE update this later to be cleaner
-                        # Checks same thing as above but after randomly selecting. 
-                        if ',,' not in unparsedAlleles[0]:
-                            genesTemplate.append(unparsedAlleles[0])
-                            genesTemplate.append(unparsedAlleles[0])
-                        else:
-                            parsedAlleles = unparsedAlleles[0].split(',,')     
-                            genesTemplate.append(parsedAlleles[0]) 
-                            genesTemplate.append(parsedAlleles[1])
+                    # print(f"Pop:\n{pop}\nWeights:\n{weights}\n")
 
-            # print(genesTemplate)
-            child = Cat('u', 'unnamed', False)
+                    if i == 0:
+                        maleAlleles, femAlleles, maleWeights, femaleWeights = self.get_genes_with(pop, weights, 'x')
+                        # print(maleAlleles,"\n",femAlleles)
+                        if sex == 'M':
+                            unparsedAlleles = random.choices(maleAlleles, weights=maleWeights, k=1)
+                        else:
+                            unparsedAlleles = random.choices(femAlleles, weights=femaleWeights, k=1)
+                        parsedAlleles = unparsedAlleles[0].split(',,')     
+                        genesTemplate.append(parsedAlleles[0]) 
+                        genesTemplate.append(parsedAlleles[1])
+                    else:
+                        # Checks if the weights are an integer
+                        # If they are, it means there is only one weight (100%)
+                        if isinstance(weights, np.integer):
+                            parsedAlleles = pop.split(',,')
+                            # print(parsedAlleles)
+                            genesTemplate.append(parsedAlleles[0])
+                            genesTemplate.append(parsedAlleles[1]) 
+                        # Checks if the value given is just B and not B,,b
+                        elif ',,' not in pop[0]:
+                            genesTemplate.append(pop[0])
+                            genesTemplate.append(pop[0])
+                        else:
+                            unparsedAlleles = random.choices(pop, weights=weights, k=1)
+                            # NOTE update this later to be cleaner
+                            # Checks same thing as above but after randomly selecting. 
+                            if ',,' not in unparsedAlleles[0]:
+                                genesTemplate.append(unparsedAlleles[0])
+                                genesTemplate.append(unparsedAlleles[0])
+                            else:
+                                parsedAlleles = unparsedAlleles[0].split(',,')     
+                                genesTemplate.append(parsedAlleles[0]) 
+                                genesTemplate.append(parsedAlleles[1])
+
+            child = Cat(self.userID, 0, False)
             child.create_genetics(genesTemplate)
+            child.sex = sex
             print("Child")
             child.print_genes(True, False)
+            self.child = child
             return child
         
 
@@ -104,6 +122,24 @@ class Breeding:
         else:
             return f"The cats provided cannot be bred. Check that you've provided a male and female cat."
 
+    def get_genes_with(self, pop, weights, character):
+        genesWith = []
+        weightsWith = []
+        genesWithout = []
+        weightsWithout = []
+        for i in range(len(pop)):
+            if pop[i]:
+                if character in pop[i]:
+                    genesWith.append(pop[i])
+                    weightsWith.append(weights[i])
+                else:
+                    genesWithout.append(pop[i])
+                    weightsWithout.append(weights[i])
+        
+        # print("genes with: \n",genesWith)
+        # print("genes without: \n", genesWithout)
+        return genesWith, genesWithout, weightsWith, weightsWithout
+    
     """
     Should be run AFTER generating punnetts.
     """
@@ -140,9 +176,9 @@ class Breeding:
         for i in range((len(allChoices))-1):
                 punnett = self.generate_punnett(lookupGene, locuses[i], i)
                 punnetts.append(punnett)
+        # print(punnetts)
+        return punnetts     
 
-        return punnetts
-    
     """
     Helper function of generate_punnetts that does most of the heavy lifting
     """
@@ -193,8 +229,9 @@ class Breeding:
             elif MI2 > FI2:
                 punnett.iat[1, 1] = FA2 + ',,' + MA2
         else:
-            punnett.iat[1, 0] = MA1
-            punnett.iat[1, 1] = MA2
+            punnett.iat[1, 0] = MA1 + ',,' + 'x'
+            punnett.iat[1, 1] = MA2 + ',,' + 'x'
+
         
         punnett.columns = ['MA1', 'MA2']
         percentages = punnett.value_counts('MA1').add(punnett.value_counts('MA2'), fill_value=0)

@@ -6,6 +6,7 @@ import logging
 from cat import Cat
 from plotter import Plotter
 from breeding import Breeding 
+from savehandler import SaveHandler
             
 logging.basicConfig(level=logging.INFO)
 
@@ -30,17 +31,24 @@ async def generateNewRandomCat(ctx, name="Snuggles", sex="u"):
 
         newCat = Cat(userID, 0, False)
         newCat.new_cat_creation(sex, name)
-        message0 = newCat
-        message1 = newCat.print_phenotype()
 
-        tablesToPrint = []
-        new_genes1 = newCat.get_genes()
-        new_genes2 = newCat.get_phenotype()
-        tablesToPrint.append(new_genes1)
-        tablesToPrint.append(new_genes2)
-        plotted = Plotter(tablesToPrint, name)
-        # newCat.create_tables()
+        message0, message1 = plot_one_cat(newCat, name)
         
+        table = discord.File(f"tables/{name}.png")
+        await ctx.send(file=table, content=f"{message0}\n{message1}")
+    else:
+        await ctx.reply("You inputed something incorrectly.")
+
+@bot.command()
+async def generateNewCatWithGenes(ctx, name, sex, o1,o2,b1,b2,d1,d2,a1,a2,s1,s2,c1,c2):
+    if name.isalpha() and sex == "M" or "F":
+        userID = ctx.author.id
+        genes = [o1,o2,b1,b2,d1,d2,a1,a2,s1,s2,c1,c2]
+        newCat = Cat(userID, 0, False)
+        newCat.new_cat_creation(sex, name, False, genes)
+
+        message0, message1 = plot_one_cat(newCat, name)
+
         table = discord.File(f"tables/{name}.png")
         await ctx.send(file=table, content=f"{message0}\n{message1}")
     else:
@@ -52,48 +60,67 @@ async def loadCat(ctx, catID):
 
     newCat = Cat(userID, catID, True)
     message0 = newCat
+    message1 = newCat.print_phenotype()
+
+    id = newCat.load_id()
 
     tablesToPrint = []
     new_genes1 = newCat.get_genes()
     new_genes2 = newCat.get_phenotype()
     tablesToPrint.append(new_genes1)
     tablesToPrint.append(new_genes2)
-    plotted = Plotter(tablesToPrint, "newtable")
+    chartNames = [f"{newCat.name}'s Alleles", f"{newCat.name}'s Phenotype"]
+    plotted = Plotter(tablesToPrint, chartNames, "newtable")
 
     table = discord.File(f"tables/newTable.png")
-    await ctx.send(file=table, content=f"{message0}")
+    await ctx.send(file=table, content=f"{message0}\n{message1}")
 
 @bot.command()
-async def breedCats(ctx, motherID, fatherID):
+async def breedCats(ctx, motherID, fatherID, childName):
     userID = ctx.author.id
 
     mom = Cat(userID, motherID, True)
     dad = Cat(userID, fatherID, True)
     
-    pair = Breeding(mom, dad)
+    pair = Breeding(userID, mom, dad)
     child = pair.get_child()
-    # child.save_cat()
+    child.name = childName
+    child.load_id()
+    child.save_cat()
+    saveHandler = SaveHandler()
+    saveHandler.save_lineage(mom.id, dad.id, child.id)
     message0 = child.print_phenotype()
     
     tablesToPrint = [ ]
     mg1 = mom.get_genes()
-    # mg2 = mom.get_phenotype()
     fg1 = dad.get_genes()
-    # fg2 = dad.get_phenotype()
     nc1 = child.get_genes()
-    # nc2 = child.get_phenotype()
+
     tablesToPrint.append(mg1)
-    # tablesToPrint.append(mg2)
     tablesToPrint.append(fg1)
-    # tablesToPrint.append(fg2)
     tablesToPrint.append(nc1)
-    # tablesToPrint.append(nc2)
-    plotted = Plotter(tablesToPrint, 'unnamed')
+
+    chartNames = [f"{mom.name}'s Alleles", f"{dad.name}'s Alleles", "Child's Alleles"]
+    plotted = Plotter(tablesToPrint, chartNames, 'unnamed')
 
     table = discord.File(f"tables/unnamed.png")
     await ctx.send(file=table, content=f"random bred pair\n{message0}")
 
-bot.run('MTE1MzE0Nzg4MzAxMzU1ODM1Mg.GYFXfO.3FpcxkehsWuI27hyEJZMmTJk6Bd_7i36f1Kods')
-
 # https://github.com/openai/shap-e/tree/main
 # https://huggingface.co/spaces/hysts/Shap-E
+
+def plot_one_cat(newCat, name):
+    message0 = newCat
+    message1 = newCat.print_phenotype()
+
+    tablesToPrint = []
+    new_genes1 = newCat.get_genes()
+    new_genes2 = newCat.get_phenotype()
+    tablesToPrint.append(new_genes1)
+    tablesToPrint.append(new_genes2)
+    chartNames = [f"{name}'s Alleles", f"{name}'s Phenotype"]
+    Plotter(tablesToPrint, chartNames, name)
+
+    return message0, message1
+
+bot.run('MTE1MzE0Nzg4MzAxMzU1ODM1Mg.GYFXfO.3FpcxkehsWuI27hyEJZMmTJk6Bd_7i36f1Kods')
