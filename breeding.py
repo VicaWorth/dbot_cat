@@ -20,6 +20,7 @@ from tabulate import tabulate
 random.seed(datetime.now().timestamp())
 
 from cat import Cat
+import globals
 
 class Breeding:
     def __init__(self, userID, catOne: Cat, catTwo: Cat):
@@ -156,15 +157,6 @@ class Breeding:
             return "Could not generate punnetts. Check if pair provided can breed."
         punnetts = []
         # punnetts.astype('object')
-
-        # NOTE This has all been copy pasted from cat.py
-        allChoices = (  ('O','o'),
-                        ('B','b','b1'),
-                        ('D','d'),
-                        ('MC','mc','a'),
-                        ('Ws','ws', 'wx'),
-                        ('C','cb','cs','c'),
-                        ('x'))
         lookupGene = ('O','o',
                       'B','b','b1',
                       'D','d',
@@ -173,7 +165,7 @@ class Breeding:
                       'C','cb','cs','c',
                       'x')
         locuses = ['LocusO','LocusB','LocusD','LocusA','LocusS','LocusC']
-        for i in range((len(allChoices))-1):
+        for i in range((len(globals.allChoices))-1):
                 punnett = self.generate_punnett(lookupGene, locuses[i], i)
                 punnetts.append(punnett)
         # print(punnetts)

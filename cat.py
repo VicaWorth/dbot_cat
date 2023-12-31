@@ -18,6 +18,7 @@ import math
 from datetime import datetime
 from tabulate import tabulate
 
+import globals
 
 # This stops rows and coulmns from being cutoff
 pd.set_option('display.max_columns', None)
@@ -26,6 +27,9 @@ pd.set_option('display.max_colwidth', None)
 # pd.set_option('display.max_rowwidth', None)
 
 lookupColor = {
+            # Sexes
+                'M': 'Male',
+                'F': 'Female',
             # Locus O (Orange)
                 'O': 'Orange',
                 'o': 'Not Orange',
@@ -92,38 +96,23 @@ class Cat:
     def seeder():
         random.seed(datetime.now().timestamp())
 
-    def new_cat_creation(self, sex, name, randomGen : bool, genes):
-        self.sex = sex
+    def save_name_and_sex(self, name, sex):
         self.name = name
-        if randomGen:
-            self.random_generate_s()
-        else:
-            self.create_genetics(genes)
-        self.save_cat()
-        self.load_id()
+        self.sex = sex
     
     def random_generate_s(self):
 
-            # This tuple holds the number of options per allele
-            # These are the locusts
-            #             O B D A S C
-            allChoices = (('O','o'),
-                          ('B','b','b1'),
-                          ('D','d'),
-                          ('MC','mc','a'),
-                          ('Ws','ws', 'wx'),
-                          ('C','cb','cs','c'),
-                          ('x'))
+
             genesHolder = []
-            for i in range((len(allChoices))-1):
-                r1 = random.randint(0, len(allChoices[i])-1)
-                r2 = random.randint(0, len(allChoices[i])-1)
+            for i in range((len(globals.allChoices))-1):
+                r1 = random.randint(0, len(globals.allChoices[i])-1)
+                r2 = random.randint(0, len(globals.allChoices[i])-1)
                 if r1 < r2:
-                    genesHolder.append(allChoices[i][r1])
-                    genesHolder.append(allChoices[i][r2])
+                    genesHolder.append(globals.allChoices[i][r1])
+                    genesHolder.append(globals.allChoices[i][r2])
                 else:
-                    genesHolder.append(allChoices[i][r2])
-                    genesHolder.append(allChoices[i][r1])
+                    genesHolder.append(globals.allChoices[i][r2])
+                    genesHolder.append(globals.allChoices[i][r1])
             # The create genetics panel will automatically handle
             # male cats and their genetic dependencies (so dont worry about O)
             self.create_genetics(genesHolder)
@@ -283,9 +272,9 @@ class Cat:
             message = ("Cat's sex cannot be determined.")
         
         if tortie == True:
-            message = (f"{self.name} is a sex: {self.sex}, {colorpoint} {tabby} (stripes) Tortoiseshell, colored {baseColor[0]} and {baseColor[1]} with {whitespotting} White Spots.")
+            message = (f"{self.name} is a {lookupColor[self.sex]} {colorpoint} {tabby} (stripes) Tortoiseshell, colored {baseColor[0]} and {baseColor[1]} with {whitespotting} White Spots.")
         else:
-            message = (f"{self.name} is a sex: {self.sex}, {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
+            message = (f"{self.name} is a {lookupColor[self.sex]} {colorpoint} {tabby} (stripes) {baseColor[0]} with {whitespotting} White Spots.")
         print(message)
         return message
     

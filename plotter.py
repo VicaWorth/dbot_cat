@@ -3,6 +3,8 @@ import numpy as np
 from pandas.plotting import table 
 import pandas as pd
 
+import globals
+
 class Plotter:
     def __init__(self, tables : list, chartNames : list, imageName):
         self.tables = tables
@@ -22,9 +24,12 @@ class Plotter:
         fig.patch.set_visible(False)
         counter = 0
         for table in self.tables:
-            axs[counter].set_title(chartNames[counter])
-            axs[counter].axis('off')
-            axs[counter].axis('tight')
+            ax = axs[counter]
+
+            ax.set_xlabel(' ')
+            ax.set_title(chartNames[counter])
+            ax.axis('off')
+            ax.axis('tight')
             tableDrawn = axs[counter].table(cellText=table.values, colLabels=table.columns, loc="center")
         
             tableDrawn.set_fontsize(14)
@@ -32,4 +37,4 @@ class Plotter:
             counter += 1
         
         fig.tight_layout()
-        plt.savefig(f'tables/{self.imageName}.png')
+        plt.savefig(f'tables/{self.imageName}.{globals.IMAGE_TYPE}')
