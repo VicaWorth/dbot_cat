@@ -95,4 +95,4 @@ async def counter(ctx: commands.Context):
     await ctx.send('Here is your very own button!', view=view)
 
 
-bot.run('MTE1MzE0Nzg4MzAxMzU1ODM1Mg.GYFXfO.3FpcxkehsWuI27hyEJZMmTJk6Bd_7i36f1Kods')
+bot.run(f'{globals.token}')
