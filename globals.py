@@ -24,3 +24,7 @@ uf.close()
 pf = open("../password.txt", "r")
 password = pf.read()
 pf.close()
+
+tf = open("../token.txt", "r")
+password = tf.read()
+tf.close()

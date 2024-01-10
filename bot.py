@@ -2,6 +2,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import logging
+from typing import List
+
 
 import globals
 from cat import Cat
@@ -11,7 +13,37 @@ from savehandler import SaveHandler
             
 logging.basicConfig(level=logging.INFO)
 
-MY_GUILD = discord.Object(id=913140922085171240)
+# class CancelButton(discord.ui.Button):
+#     def __init__(self):
+#         super().__init__(style=discord.ButtonStyle.danger, label='Cancel')
+        
+#     async def callback(self, interaction: discord.Interaction):
+#         assert self.view is not None
+#         view.stop()
+#         await interaction.response.edit_message(view=view)
+
+class CreateCatButton(discord.ui.Button):
+    def __init__(self, label: str, content: str, value: int):
+        super().__init__(style=discord.ButtonStyle.secondary, label=label)
+        self.value = value
+        self.content = f"Choose the gene for {content}"
+
+    async def callback(self, interaction:discord.Interaction):
+        assert self.view is not None
+        view: CreateCatView(self.value + 1) = self.view
+
+        await interaction.response.edit_message(content=self.content, view=view)
+        return self.content
+
+class CreateCatView(discord.ui.View):
+    children: List[CreateCatButton]
+
+    def __init__(self, value: int):
+        super().__init__()
+
+        for j in range(len(globals.allChoices[value])):
+            print(j)
+            self.add_item(CreateCatButton(globals.allChoices[value][j], globals.locuses[value], value))
 
 class myBot(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -31,15 +63,16 @@ bot = myBot(intents=intents)
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
-    print('----------------------')
 
-# @bot.tree.tree.command()
-# async def helpCat(interaction: discord.Interaction):
-#     message = "# Catbot! WOOHOO\n Commands are run via >\n"
-#     message += "## >generateNewRandomCat name sex\n Will generate a new cat"
-#     message += "\n## >loadCat id\n Will load a new cat"
-#     message += "\n## >breedCats motherid fatherid\n Will breed two cats"
-#     await interaction.response.send_message(content=message)
+@bot.tree.command()
+@app_commands.describe(
+    catname='The name of the cat you are creating',
+)
+async def mert(interaction: discord.Interaction, catname: str):
+    # message0 = 'How would you like to generate your cat? Randomly or selected?'
+    await interaction.response.send_message(content="Hey guys whats up!\n")
+    for i in range(len(globals.locuses)-1):
+        await interaction.response.edit_message(content=f'{catname}\n', view=CreateCatView(i))
     
 @bot.tree.command()
 async def showallgenes(interaction: discord.Interaction):
@@ -58,6 +91,7 @@ async def gennewcatrandom(interaction: discord.Interaction, name:str, sex:str):
         newCat.save_name_and_sex(name, sex)
         newCat.random_generate_s()
 
+        newCat.save_cat()
         newCat.load_id()
 
         message0, message1, table = plot_one_cat(newCat, newCat.id)
@@ -80,11 +114,12 @@ async def gennewcatinserted(interaction: discord.Interaction, name:str, sex: str
         newCat.save_name_and_sex(name, sex)
         newCat.create_genetics(genes)
 
+        newCat.save_cat()
         newCat.load_id()
 
-        message0, message1 = plot_one_cat(newCat, newCat.id)
+        message0, message1, table = plot_one_cat(newCat, newCat.id)
 
-        table = discord.File(f"tables/{newCat.id}.{globals.IMAGE_TYPE}")
+        # table = discord.File(f"tables/{newCat.id}.{globals.IMAGE_TYPE}")
         await interaction.response.send_message(file=table, content=f"{message0}\n{message1}")
     else:
         await interaction.response.send_message("You inputed something incorrectly.")
@@ -160,7 +195,7 @@ async def breedcats(interaction: discord.Interaction, motherid: int, fatherid: i
 @bot.tree.context_menu(name='Show Join Date')
 async def show_join_date(interaction: discord.Interaction, member: discord.Member):
     # The format_dt function formats the date time into a human readable representation in the official client
-    await interaction.response.response.send_message_message(f'{member} joined at {discord.utils.format_dt(member.joined_at)}')
+    await interaction.response.send_message(f'{member} joined at {discord.utils.format_dt(member.joined_at)}')
 
 # Creates the message and image
 def plot_one_cat(newCat, imageName: str):
@@ -179,4 +214,4 @@ def plot_one_cat(newCat, imageName: str):
 
     return message0, message1, table
 
-bot.run('MTE1MzE0Nzg4MzAxMzU1ODM1Mg.GYFXfO.3FpcxkehsWuI27hyEJZMmTJk6Bd_7i36f1Kods')
+bot.run(f'{globals.token}')
