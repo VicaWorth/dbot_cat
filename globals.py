@@ -26,5 +26,5 @@ password = pf.read()
 pf.close()
 
 tf = open("../token.txt", "r")
-password = tf.read()
+token = tf.read()
 tf.close()

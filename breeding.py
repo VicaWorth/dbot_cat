@@ -164,9 +164,9 @@ class Breeding:
                       'Ws','ws','wx',
                       'C','cb','cs','c',
                       'x')
-        locuses = ['LocusO','LocusB','LocusD','LocusA','LocusS','LocusC']
+        
         for i in range((len(globals.allChoices))-1):
-                punnett = self.generate_punnett(lookupGene, locuses[i], i)
+                punnett = self.generate_punnett(lookupGene, globals.locuses[i], i)
                 punnetts.append(punnett)
         # print(punnetts)
         return punnetts     
