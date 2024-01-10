@@ -7,7 +7,10 @@
 ## What doesn't the bot have?
 - Error handling
 - An easy to use UI
-- Long-term usage capabilites (no dedicated server) 
+- Long-term usage capabilites (no dedicated server)
+
+## How to read the output?
+When the bot responds, it will give an attachment photo of a table with the cat's genes. The dominant genes are the top row, the recessive genes are the bottom row.
 
 # Commands
 ## /gennewcatrandom [name] [sex]
