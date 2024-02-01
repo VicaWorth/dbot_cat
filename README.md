@@ -1,5 +1,5 @@
 # What is this?
-## This is a discord bot that can:
+## This is a Discord bot that can:
 - Create and load a genotype and phenotype of a cat.
 - Save the cat's genetic information
 - Breed two cats and create genetically accurate children
